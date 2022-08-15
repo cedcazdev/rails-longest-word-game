@@ -11,29 +11,25 @@ class GamesController < ApplicationController
     @available_letters = params[:available_letters]
     if @word.present?
       @word.split('').each do |letter|
-        if @available_letters.include?(letter.upcase)
-          if english_word?(@word) && @available_letters.include?(letter.upcase)
-            @answer = "Congratulations! #{@word} is a valid English word!"
-            return @answer
-          else
-            @answer = "Sorry but #{@word.upcase} does not seem to be a valid English word..."
-          end
+        if @available_letters.include?(letter.upcase) && english_word?(@word)
+          @answer = "Congratulations! #{@word.upcase} is a valid English word!"
+        elsif !english_word?(@word)
+          @answer = "Sorry but #{@word.upcase} does not seem to be a valid English word..."
         else
           @answer = "Sorry but #{@word.upcase} can't be built out of #{@available_letters}..."
         end
       end
     else
-      @answer = "Sorry it's empty"
+      @answer = 'Sorry the entry is empty!!!'
     end
   end
 
   private
 
   # verificando si la palabra retornado es una palabra ingles incluido en el diccionario de la API
-  def english_word?(keyboard)
-    # JSON.parse(open("https://wagon-dictionary.herokuapp.com/#{palabra}").read)["found"]
-
-    respuesta = URI.open("https://wagon-dictionary.herokuapp.com/#{keyboard}")
+  # JSON.parse(open("https://wagon-dictionary.herokuapp.com/#{palabra}").read)["found"]
+  def english_word?(keyword)
+    respuesta = URI.open("https://wagon-dictionary.herokuapp.com/#{keyword}")
     json = JSON.parse(respuesta.read)
     json['found']
   end
